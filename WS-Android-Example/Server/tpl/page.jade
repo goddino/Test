@@ -1,0 +1,15 @@
+!!!
+html
+    head
+        title= "Test2 WebSocket for Android"
+        script(src='/public/chat.js')
+        script(src='/socket.io/socket.io.js')
+    body
+        #content(style='width: 500px; height: 300px; margin: 0 0 20px 0; border: solid 1px #999; overflow-y: scroll;')
+        .controls
+            p
+              |Username:
+              input#username(style='width:350px;')
+            br
+            input.field(id='msgField', style='width:350px;')
+            input.send(id='sendButton', type='button', value='send')
