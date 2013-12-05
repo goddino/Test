@@ -42,7 +42,8 @@ public class MainActivity extends Activity {
     // Initialise wsClient
     try {
       // wsClient = new WsClient( new URI( "ws://localhost:8887" ), new Draft_17() );
-      wsClient = new WsClient( new URI( "ws://49.128.39.190:8887" ), new Draft_17() );
+      // wsClient = new WsClient( new URI( "ws://49.128.39.190:8887" ), new Draft_17() );
+      wsClient = new WsClient( new URI( "ws://192.168.1.113:8887" ), new Draft_17() );
     } catch (URISyntaxException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
