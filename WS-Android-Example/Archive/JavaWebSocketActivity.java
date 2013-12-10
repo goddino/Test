@@ -60,6 +60,7 @@ public class JavaWebSocketActivity extends Activity {
     // Set Views
     txtVwChatMsgs = ( TextView ) findViewById( R.id.textViewChatMessages );
     edtVwUserMsg = ( EditText ) findViewById( R.id.editTextUserMessage );
+    edtVwUserMsg = ( EditText ) findViewById( R.id.editTextUsername );
     btnSendChat = ( Button ) findViewById( R.id.buttonSendChat );
 
     // Set on ClickListener
