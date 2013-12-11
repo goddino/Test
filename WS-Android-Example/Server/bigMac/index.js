@@ -1,39 +1,45 @@
-var express = require("express");
-var app = express();
 var port = 8887;
- 
-app.set('views', __dirname + '/tpl');
-app.set('view engine', "jade");
-app.engine('jade', require('jade').__express);
-app.get("/", function(req, res){
-    res.render("page");
-});
-
-// External JS for front end logic:
-// app.use(express.static(__dirname + '/public'));
-app.use(express.static(__dirname));
-
-// Listen Socket.io will use ExpressJS server, and listen for ws.
+var server = require('http').Server().listen( port );
 var io = require('socket.io').listen(
-  app.listen(port),
+  server,
   { 'destroy upgrade': false }
 );
+
 console.log("Listening on port " + port + ".");
 
-// Respond to client connecting.
-io.sockets.on( 
-  'connection', 
-  function( socket ) {
-    // Once connected, send greeting to client.
-    socket.emit( 'msgServer',
-                { message: 'Welcome to WebSocket test for Android' });
-    // On receipt of client message of type "msgClient"
-    socket.on( 
-      'msgClient',
-      // Broadcast the message to all clients.
-      function( data ) {
-        io.sockets.emit( 'msgServer', data );
-      }
-    );
-  }
-);
+io.sockets.on('connection', function(socket) {
+  var msgCon = "Connected to server for Android WebSocket Test!";
+  socket.emit('msgServer', { username: "Server", message: msgCon });
+  
+  // Broadcast messages from event "chat".
+  socket.on('chat', function(data) {
+    var messages = [];
+    if( data.message ) {
+      messages.push( data );
+    }
+    for( var i=0; i < messages.length; i++ ) {
+      var curUser = "Unidentified";
+      if( messages[i].username ) curUser = messages[i].username;
+      // Emit to sender:
+      // socket.emit('chat', 
+      // Emit to all clients:
+      io.sockets.emit('chat', 
+        { username: curUser, message: messages[i].message });
+    }
+  });
+  
+  // Echo events of "msgClient" with "msgServer".
+  socket.on('msgClient', function(data) {
+    var messages = [];
+    if( data.message ) {
+      messages.push( data );
+    }
+    for( var i=0; i < messages.length; i++ ) {
+      var curUser = "Unidentified";
+      if( messages[i].username ) curUser = messages[i].username;
+      var msg = "Server received from " + curUser + ":\n" + messages[i].message;
+      socket.emit('msgServer', { username: "Server", message: msg });
+    }
+  });
+});
+  
