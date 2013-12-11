@@ -16,6 +16,7 @@ import io.socket.SocketIOException;
 
 import com.test.androidwschat.R;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -25,16 +26,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-// public class MainActivity extends Activity {
 public class MainActivity extends Activity {
 
-  // Instantiate views
-  private TextView txtVwChatMsgs;
-  private EditText edtVwUserMsg;
-  private EditText edtVwUsername;
-  private Button btnSendChat;
+  // A public member of this class,
+    // for other classes to have a handle on MainActivity instance.
+  public static MainActivity mainActivity;
+  public static UIActivity uiActivity;
   
-  private SocketIO socket = null;
+  // String to hold chat contents
+  public String chatContents = "";
+  
+  public SocketIO socket = null;
   
   private static String TAG;
   
@@ -45,31 +47,30 @@ public class MainActivity extends Activity {
     setContentView(R.layout.activity_main);
     TAG = "MainActivity";
     
-    // Set Views
-    txtVwChatMsgs = ( TextView ) findViewById( R.id.textViewChatMessages );
-    txtVwChatMsgs.setMovementMethod( new ScrollingMovementMethod() );
-    edtVwUsername = ( EditText ) findViewById( R.id.editTextUsername );
-    edtVwUserMsg = ( EditText ) findViewById( R.id.editTextUserMessage );
-    btnSendChat = ( Button ) findViewById( R.id.buttonSendChat );
+    try {
+      SocketIO.setDefaultSSLSocketFactory(SSLContext.getDefault());
+    } catch (NoSuchAlgorithmException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
 
+    try {
+      socket = new SocketIO("http://49.128.39.190:8887/");
+    } catch (MalformedURLException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
     
-    try {
-		SocketIO.setDefaultSSLSocketFactory(SSLContext.getDefault());
-	} catch (NoSuchAlgorithmException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-
-    try {
-		socket = new SocketIO("http://49.128.39.190:8887/");
-	} catch (MalformedURLException e1) {
-		// TODO Auto-generated catch block
-		e1.printStackTrace();
-	}
     socket.connect( new myIOCallback() );
     
-    // Set on ClickListener
-    btnSendChat.setOnClickListener( new MyOnClickListener() );
+    // Set mainActivity
+    mainActivity = this;
+
+    // Start UI
+    Intent intentUIActivity = 
+        new Intent( getApplicationContext(), UIActivity.class );
+        
+    startActivity( intentUIActivity );
   }
 
   @Override
@@ -78,56 +79,16 @@ public class MainActivity extends Activity {
     getMenuInflater().inflate(R.menu.main, menu);
     return true;
   }
-
-  class MyOnClickListener implements Button.OnClickListener {
-      public void onClick( View v ) {
-        String msgS = "{\"name\":\"msgServer\"," +
-                     "\"args\":[" + 
-                      "{\"username\":\"Android\"," +
-                      "\"message\":\"Test Android.\"}]}";
-        String msgC = "{\"name\":\"msgClient\"," +
-                     "\"args\":[" + 
-                      "{\"username\":\"Android\"," +
-                      "\"message\":\"Test Android.\"}]}";
-
-        String eventC = "{\"username\":\"Android\"," +
-                      "\"message\":\"Test from Android.\"}";
-        
-        // Convert input into event JSON string in socket.io format.
-          // Example of socket.io message:
-          /*           
-          {"name":"MessageName",
-            "args":[{"ObjectKey1":"Key1Value","ObjectKey2":"Key2Value"}]}
-          {"name":"msgServer","args":[{"username":"bm","message":"hello"}]}
-          */        
-        String chat = edtVwUserMsg.getText().toString();
-        edtVwUserMsg.setText( "" );
-        
-        String username = edtVwUsername.getText().toString();
-        if( username.equals( "" ) ) username = "Android";
-        
-        JSONObject eventMsg = new JSONObject();
-        try {
-          eventMsg.put( "username", username );
-          eventMsg.put( "message", chat );
-        } catch (JSONException e1) {
-          e1.printStackTrace();
-        }
-        
-        // socket.emit( "msgClient", eventMsg );
-        
-        // For chat, send a "chat" event.
-        socket.emit( "chat", eventMsg );
-      }
-    }
   
   // Method to write contents of txtVwChatMsgs from none UI thread
   public void addChatMsg( final String newChat ) {
     // Modification to UI must run on the UI thread.
     MainActivity.this.runOnUiThread( new Runnable() {
       public void run() {
-        // String prevChat = (String) txtVwChatMsgs.getText().toString();
-        txtVwChatMsgs.append( "\n" + newChat );
+        // txtVwChatMsgs.append( "\n" + newChat );
+        chatContents += ( "\n" + newChat );
+        if( uiActivity != null )
+          uiActivity.txtVwChatMsgs.setText( chatContents );
       }
     });
   }
