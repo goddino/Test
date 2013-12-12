@@ -1,5 +1,20 @@
 var port = 8887;
-var server = require('http').Server().listen( port );
+var express = require('express')
+var app = express();
+app.use( express.static( __dirname ) );
+// var server = require('http').Server().listen( port );
+var server = require('http').createServer(app).listen( port );
+
+// Set up jade as template engine.
+app.set('views', __dirname + '/tpl');
+app.set('view engine', "jade");
+app.engine('jade', require('jade').__express);
+
+// Load web client when using browser to connect to server.
+app.get("/", function(req, res){
+    res.render("page");
+});
+
 var io = require('socket.io').listen(
   server,
   { 'destroy upgrade': false }
