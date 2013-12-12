@@ -1,8 +1,6 @@
 package com.test.androidwschat;
-import java.net.MalformedURLException;
-import java.security.NoSuchAlgorithmException;
 
-import javax.net.ssl.SSLContext;
+import java.net.MalformedURLException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,26 +10,20 @@ import io.socket.IOAcknowledge;
 import io.socket.IOCallback;
 import io.socket.SocketIO;
 import io.socket.SocketIOException;
-//import io.socket.WebsocketTransport;
 
 import com.test.androidwschat.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
   // A public member of this class,
     // for other classes to have a handle on MainActivity instance.
   public static MainActivity mainActivity;
-  public static UIActivity uiActivity;
+  public UIActivity uiActivity;
   
   // String to hold chat contents
   public String chatContents = "";
@@ -44,16 +36,9 @@ public class MainActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
+    // setContentView(R.layout.activity_main);
     TAG = "MainActivity";
     
-    try {
-      SocketIO.setDefaultSSLSocketFactory(SSLContext.getDefault());
-    } catch (NoSuchAlgorithmException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-
     try {
       socket = new SocketIO("http://49.128.39.190:8887/");
     } catch (MalformedURLException e1) {
@@ -85,7 +70,6 @@ public class MainActivity extends Activity {
     // Modification to UI must run on the UI thread.
     MainActivity.this.runOnUiThread( new Runnable() {
       public void run() {
-        // txtVwChatMsgs.append( "\n" + newChat );
         chatContents += ( "\n" + newChat );
         if( uiActivity != null )
           uiActivity.txtVwChatMsgs.setText( chatContents );
@@ -149,7 +133,6 @@ public class MainActivity extends Activity {
             chatUser = jsonChat.get( "username" ).toString();
             chatMsg = jsonChat.get( "message" ).toString();
           } catch (JSONException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
           }
           

@@ -1,18 +1,7 @@
 package com.test.androidwschat;
-import java.net.MalformedURLException;
-import java.security.NoSuchAlgorithmException;
 
-import javax.net.ssl.SSLContext;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import io.socket.IOAcknowledge;
-import io.socket.IOCallback;
-import io.socket.SocketIO;
-import io.socket.SocketIOException;
-//import io.socket.WebsocketTransport;
 
 import com.test.androidwschat.R;
 import android.app.Activity;
@@ -33,8 +22,6 @@ public class UIActivity extends Activity {
   private EditText edtVwUserMsg;
   private EditText edtVwUsername;
   private Button btnSendChat;
-  
-  private SocketIO socket = null;
   
   private static String TAG;
   
@@ -69,18 +56,6 @@ public class UIActivity extends Activity {
 
   class MyOnClickListener implements Button.OnClickListener {
       public void onClick( View v ) {
-        String msgS = "{\"name\":\"msgServer\"," +
-                     "\"args\":[" + 
-                      "{\"username\":\"Android\"," +
-                      "\"message\":\"Test Android.\"}]}";
-        String msgC = "{\"name\":\"msgClient\"," +
-                     "\"args\":[" + 
-                      "{\"username\":\"Android\"," +
-                      "\"message\":\"Test Android.\"}]}";
-
-        String eventC = "{\"username\":\"Android\"," +
-                      "\"message\":\"Test from Android.\"}";
-        
         // Convert input into event JSON string in socket.io format.
           // Example of socket.io message:
           /*           
@@ -101,8 +76,6 @@ public class UIActivity extends Activity {
         } catch (JSONException e1) {
           e1.printStackTrace();
         }
-        
-        // socket.emit( "msgClient", eventMsg );
         
         // For chat, send a "chat" event.
         mainActivity.socket.emit( "chat", eventMsg );
