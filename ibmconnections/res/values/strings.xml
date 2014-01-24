@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">ibmconnections</string>
+    <string name="app_name">IBM Connections WebRTC</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="main">
+        IBM Connections WebRTC\n\n\nClick back to return to Updates.
+    </string>
 
 </resources>
